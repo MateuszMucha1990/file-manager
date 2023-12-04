@@ -3,8 +3,9 @@
     <AuthenticatedLayout>
         <nav class="flex items-center justify-between p-1 mb3">
             <ol class="inline-flex items-center  space-x-1 md:space-x-3">
-                <li v-for="ans of ancestors.data" :key="ans.id"  class="inline-flex items-center">
-                    <Link v-if="!ans.parent_id" :href="route('myFiles')" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
+                <li v-for="ans of ancestors.data" :key="ans.id" class="inline-flex items-center">
+                    <Link v-if="!ans.parent_id" :href="route('myFiles')"
+                    class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
                         My Files
 
                     </Link>
@@ -37,8 +38,8 @@
                      @dblclick="openFolder(file)"
                     class="bg-white border-b transition duration-300 ease-in-out hover:bg-gray-100 cursor-pointer">
 
-
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 flex items-center">
+                        <FileIcon :file="file" />
                         {{ file.name }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -64,6 +65,7 @@
 
 <script setup>
 //Import
+import FileIcon from '@/Components/app/FileIcon.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { router } from '@inertiajs/vue3';
 import {Link} from '@inertiajs/vue3';
@@ -72,7 +74,7 @@ import {Link} from '@inertiajs/vue3';
 const {files}=defineProps({
     files:Object,
     folder:Object,
-    ancestors:Array
+    ancestors:Object
 })
 
 //Methods

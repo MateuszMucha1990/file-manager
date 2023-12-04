@@ -12,18 +12,20 @@
                 Drop Files here to upload
             </template>
 
-            <template>
+            <template v-else>
                 <div class="flex itmes-center justify-between w-full">
                     <SearchForm />
                     <UserSettingsDropdown />
                 </div>
+
                 <div class="flex-1 flex flex-col overflow-hidden">
                     <slot />
                 </div>
             </template>
         </main>
-
     </div>
+
+    <FormProgress :form="fileUploadForm" />
 </template>
 
 
@@ -37,12 +39,14 @@ import UserSettingsDropdown from '../Components/app/UserSettingsDropdown.vue';
 import { emmiter, FILE_UPLOAD_STARTED } from "@/event-bus.js";
 import { ref } from 'vue';
 import { useForm, usePage } from '@inertiajs/vue3';
+import FormProgress from '@/Components/app/FormProgress.vue';
 
 //Uses
-const page = usePage()
+const page = usePage();
 const fileUploadForm = useForm({
-    files:[],
-    parent_id:null
+    files: [],
+    relative_paths: [],
+    parent_id: null
 })
 
 
@@ -63,9 +67,8 @@ function onDragLeave() {
 
 
 function handleDrop(ev) {
-    dragOver.value = false
+    dragOver.value = false;
     const files = ev.dataTransfer.files
-
     if (!files.length) {
         return
     }
@@ -74,15 +77,30 @@ function handleDrop(ev) {
 
 
 function uploadFiles(files) {
+console.log(files);
     fileUploadForm.parent_id = page.props.folder.id
     fileUploadForm.files = files
+    fileUploadForm.relative_paths =[...files].map(f=>f.webkitRelativePath);
 
-    fileUploadForm.post()
+    fileUploadForm.post(route('file.store'))
 }
 
 // //Hooks
 onMounted(() => {
-    emmiter.on(FILE_UPLOAD_STARTED, uploadFiles)
+    emmiter.on(FILE_UPLOAD_STARTED, uploadFiles),{
+        onSuccess:()=>{
+
+        },
+    onError:errors=>{
+        let message='';
+
+        if(Object.keys(errors).length >0) {
+            message=errors[Object.keys(errors)[0]]
+        } else{
+            message ='Error during file upload. Try again.'
+        }
+    }
+    }
 })
 </script>
 
